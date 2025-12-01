@@ -5,5 +5,5 @@ namespace App\Http\Controllers;
 abstract class Controller
 {
     //
-    // Aquí puedes agregar métodos o propiedades comunes para todos los controladores
+    // Aquí puedes agregar métodos o propiedades comunes para todos los controladore
 }
