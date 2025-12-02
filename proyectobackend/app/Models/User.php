@@ -63,4 +63,8 @@ class User extends Authenticatable
     {
         return $this->roles()->whereIn('name', $roles)->exists();
     }
+    public function pets()
+{
+    return $this->hasMany(Pet::class, 'owner_id');
+}
 }
