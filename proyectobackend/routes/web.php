@@ -3,6 +3,8 @@
 use App\Http\Controllers\UserController;  // ← AGREGA ESTA LÍNEA
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\AppointmentController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -33,5 +35,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('users', UserController::class);
     Route::middleware(['auth', 'role:admin,veterinario'])->group(function () {
     Route::resource('pets', PetController::class);
+    Route::middleware(['auth', 'role:admin,veterinario'])->group(function () {
+    Route::resource('pets', PetController::class);
+    Route::resource('appointments', AppointmentController::class);
+});
 });
 });

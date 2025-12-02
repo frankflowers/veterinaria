@@ -10,12 +10,27 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+             <!-- Navigation Links -->
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+        {{ __('Dashboard') }}
+    </x-nav-link>
+    
+    @if(auth()->user()->hasRole('admin'))
+    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+        Usuarios
+    </x-nav-link>
+    @endif
+    
+    @if(auth()->user()->hasAnyRole(['admin', 'veterinario']))
+    <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')">
+        Mascotas
+    </x-nav-link>
+    <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')">
+        Citas
+    </x-nav-link>
+    @endif
+</div>
             </div>
 
             <!-- Settings Dropdown -->
