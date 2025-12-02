@@ -88,7 +88,7 @@ php artisan serve
 
 ### Clientes
 - **Email**: juan@cliente.com / **Password**: password123
-- **Email**: ana@cliente.com / **Password**: password123
+- **Email**: franciscojair@cliente.com / **Password**: password123
 - **Email**: luis@cliente.com / **Password**: password123
 
 ## Estructura de Base de Datos
