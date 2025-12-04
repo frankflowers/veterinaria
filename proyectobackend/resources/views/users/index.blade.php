@@ -48,12 +48,17 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
                                     @if($user->active)
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Desactivar usuario?')">Desactivar</button>
-                                    </form>
-                                    @endif
+                                <button 
+                                    onclick="confirmDelete({{ $user->id }})" 
+                                    class="text-red-600 hover:text-red-900">
+                                    Desactivar
+                                </button>
+                                <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                                @endif
+                                  
                                 </td>
                             </tr>
                             @endforeach
@@ -66,4 +71,22 @@
             </div>
         </div>
     </div>
+    <script>
+function confirmDelete(userId) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "El usuario será desactivado",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + userId).submit();
+        }
+    });
+}
+</script>
 </x-app-layout>

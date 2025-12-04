@@ -5,9 +5,10 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+                   <a href="{{ route('dashboard') }}" class="flex items-center">
+     <img src="{{ asset('images/logo.png') }}" alt="VetSystem" class="h-20 w-auto">
+    <span class="ml-2 text-xl font-bold text-gray-800">Veterianaria El gato gordo</span>
+</a>
                 </div>
 
              <!-- Navigation Links -->

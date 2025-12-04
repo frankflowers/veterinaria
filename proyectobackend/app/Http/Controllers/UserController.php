@@ -41,35 +41,38 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente');
     }
 
+    public function show(User $user)
+    {
+        return view('users.show', compact('user'));
+    }
+
     public function edit(User $user)
     {
         $roles = Role::all();
         return view('users.edit', compact('user', 'roles'));
     }
+public function update(Request $request, User $user)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'role_id' => 'required|exists:roles,id'
+    ]);
 
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role_id' => 'required|exists:roles,id',
-            'active' => 'boolean'
-        ]);
+    $user->update([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'active' => $request->boolean('active') // Esto es mejor, convierte automáticamente
+    ]);
 
-        $user->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'active' => $request->has('active')
-        ]);
+    $user->roles()->sync([$validated['role_id']]);
 
-        $user->roles()->sync([$validated['role_id']]);
-
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado');
-    }
+    return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
+}
 
     public function destroy(User $user)
     {
         $user->update(['active' => false]);
-        return redirect()->route('users.index')->with('success', 'Usuario desactivado');
+        return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
     }
 }

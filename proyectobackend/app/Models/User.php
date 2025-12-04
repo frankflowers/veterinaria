@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'active', // 
     ];
 
     /**
@@ -42,6 +43,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'active' => 'boolean', // 
         ];
     }
 
@@ -63,8 +65,9 @@ class User extends Authenticatable
     {
         return $this->roles()->whereIn('name', $roles)->exists();
     }
+    
     public function pets()
-{
-    return $this->hasMany(Pet::class, 'owner_id');
-}
+    {
+        return $this->hasMany(Pet::class, 'owner_id');
+    }
 }

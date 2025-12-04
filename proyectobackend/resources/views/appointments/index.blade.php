@@ -64,11 +64,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('appointments.edit', $appointment) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                    @if($appointment->status == 'pendiente')
-                                    <form action="{{ route('appointments.destroy', $appointment) }}" method="POST" class="inline">
+                                  @if($appointment->status == 'pendiente')
+                                    <button 
+                                        onclick="confirmCancel({{ $appointment->id }})" 
+                                        class="text-red-600 hover:text-red-900">
+                                        Cancelar
+                                    </button>
+                                    <form id="cancel-form-{{ $appointment->id }}" action="{{ route('appointments.destroy', $appointment) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Cancelar cita?')">Cancelar</button>
                                     </form>
                                     @endif
                                 </td>
@@ -87,4 +91,22 @@
             </div>
         </div>
     </div>
+    <script>
+function confirmCancel(appointmentId) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "La cita será cancelada",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('cancel-form-' + appointmentId).submit();
+        }
+    });
+}
+</script>
 </x-app-layout>

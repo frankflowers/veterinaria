@@ -63,15 +63,32 @@ class PetController extends Controller
             'active' => 'boolean'
         ]);
 
+        // Verificar si hay cambios
+        $hasChanges = false;
+        
+        if ($pet->name != $validated['name'] || 
+            $pet->species != $validated['species'] || 
+            $pet->breed != $validated['breed'] ||
+            $pet->birth_date != $validated['birth_date'] ||
+            $pet->medical_history != $validated['medical_history'] ||
+            $pet->owner_id != $validated['owner_id'] ||
+            $pet->active != $request->has('active')) {
+            $hasChanges = true;
+        }
+
+        if (!$hasChanges) {
+            return redirect()->route('pets.index')->with('warning', 'No se realizaron cambios');
+        }
+
         $validated['active'] = $request->has('active');
         $pet->update($validated);
 
-        return redirect()->route('pets.index')->with('success', 'Mascota actualizada');
+        return redirect()->route('pets.index')->with('success', 'Mascota actualizada correctamente');
     }
 
     public function destroy(Pet $pet)
     {
         $pet->update(['active' => false]);
-        return redirect()->route('pets.index')->with('success', 'Mascota desactivada');
+        return redirect()->route('pets.index')->with('success', 'Mascota desactivada correctamente');
     }
 }

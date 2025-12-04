@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('users.update', $user) }}">
+                    <form method="POST" action="{{ route('users.update', $user) }}" id="edit-user-form">
                         @csrf
                         @method('PUT')
                         
@@ -38,7 +38,7 @@
 
                         <div class="mb-4">
                             <label class="flex items-center">
-                                <input type="checkbox" name="active" {{ $user->active ? 'checked' : '' }} class="mr-2">
+                                <input type="checkbox" name="active" value="1" {{ $user->active ? 'checked' : '' }} class="mr-2">
                                 <span class="text-sm text-gray-700">Usuario activo</span>
                             </label>
                         </div>
@@ -54,4 +54,52 @@
             </div>
         </div>
     </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-user-form');
+    
+    if (!form) return;
+    
+    // Guardar valores originales
+    const originalValues = {
+        name: document.querySelector('input[name="name"]').value.trim(),
+        email: document.querySelector('input[name="email"]').value.trim(),
+        role_id: document.querySelector('select[name="role_id"]').value,
+        active: document.querySelector('input[name="active"]').checked
+    };
+
+    console.log('Valores originales:', originalValues);
+
+    form.addEventListener('submit', function(e) {
+        const currentValues = {
+            name: document.querySelector('input[name="name"]').value.trim(),
+            email: document.querySelector('input[name="email"]').value.trim(),
+            role_id: document.querySelector('select[name="role_id"]').value,
+            active: document.querySelector('input[name="active"]').checked
+        };
+
+        console.log('Valores actuales:', currentValues);
+
+        // Verificar si hay cambios
+        const hasChanges = 
+            originalValues.name !== currentValues.name ||
+            originalValues.email !== currentValues.email ||
+            originalValues.role_id !== currentValues.role_id ||
+            originalValues.active !== currentValues.active;
+
+        console.log('¿Hay cambios?', hasChanges);
+
+        if (!hasChanges) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin cambios',
+                text: 'Debes modificar al menos un campo para actualizar',
+                confirmButtonColor: '#3B82F6'
+            });
+            return false;
+        }
+    });
+});
+</script>
 </x-app-layout>

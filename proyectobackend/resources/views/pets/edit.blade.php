@@ -9,7 +9,7 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('pets.update', $pet) }}">
+             <form method="POST" action="{{ route('pets.update', $pet) }}" id="edit-pet-form">
                         @csrf
                         @method('PUT')
                         
@@ -76,4 +76,45 @@
             </div>
         </div>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-pet-form');
+    
+    // Guardar valores originales
+    const originalValues = {
+        name: document.querySelector('input[name="name"]').value,
+        species: document.querySelector('select[name="species"]').value,
+        breed: document.querySelector('input[name="breed"]').value,
+        birth_date: document.querySelector('input[name="birth_date"]').value,
+        owner_id: document.querySelector('select[name="owner_id"]').value,
+        medical_history: document.querySelector('textarea[name="medical_history"]').value,
+        active: document.querySelector('input[name="active"]')?.checked || false
+    };
+
+    form.addEventListener('submit', function(e) {
+        const currentValues = {
+            name: document.querySelector('input[name="name"]').value,
+            species: document.querySelector('select[name="species"]').value,
+            breed: document.querySelector('input[name="breed"]').value,
+            birth_date: document.querySelector('input[name="birth_date"]').value,
+            owner_id: document.querySelector('select[name="owner_id"]').value,
+            medical_history: document.querySelector('textarea[name="medical_history"]').value,
+            active: document.querySelector('input[name="active"]')?.checked || false
+        };
+
+        // Verificar si hay cambios
+        const hasChanges = JSON.stringify(originalValues) !== JSON.stringify(currentValues);
+
+        if (!hasChanges) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin cambios',
+                text: 'Debes modificar al menos un campo para actualizar',
+                confirmButtonColor: '#3B82F6'
+            });
+        }
+    });
+});
+</script>
 </x-app-layout>

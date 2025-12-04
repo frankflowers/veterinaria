@@ -38,8 +38,7 @@ class AppointmentController extends Controller
 
         Appointment::create($validated);
 
-        return redirect()->route('appointments.index')
-            ->with('success', 'Cita agendada exitosamente');
+        return redirect()->route('appointments.index')->with('success', 'Cita agendada exitosamente');
     }
 
     public function show(Appointment $appointment)
@@ -70,16 +69,31 @@ class AppointmentController extends Controller
             'status' => 'required|in:pendiente,completada,cancelada'
         ]);
 
+        // Verificar si hay cambios
+        $hasChanges = false;
+        
+        if ($appointment->pet_id != $validated['pet_id'] || 
+            $appointment->veterinarian_id != $validated['veterinarian_id'] || 
+            $appointment->appointment_date != $validated['appointment_date'] ||
+            $appointment->reason != $validated['reason'] ||
+            $appointment->diagnosis != $validated['diagnosis'] ||
+            $appointment->treatment != $validated['treatment'] ||
+            $appointment->status != $validated['status']) {
+            $hasChanges = true;
+        }
+
+        if (!$hasChanges) {
+            return redirect()->route('appointments.index')->with('warning', 'No se realizaron cambios');
+        }
+
         $appointment->update($validated);
 
-        return redirect()->route('appointments.index')
-            ->with('success', 'Cita actualizada exitosamente');
+        return redirect()->route('appointments.index')->with('success', 'Cita actualizada correctamente');
     }
 
     public function destroy(Appointment $appointment)
     {
         $appointment->update(['status' => 'cancelada']);
-        return redirect()->route('appointments.index')
-            ->with('success', 'Cita cancelada');
+        return redirect()->route('appointments.index')->with('success', 'Cita cancelada correctamente');
     }
 }
