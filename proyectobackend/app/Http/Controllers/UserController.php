@@ -70,21 +70,53 @@ public function update(Request $request, User $user)
     return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
 }
 
-    public function destroy(User $user)
-    {
-        $user->update(['active' => false]);
-        return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
+  public function destroy(User $user)
+{
+    if ($user->id === 1) {
+        return redirect()->route('users.index')
+            ->with('error', 'Este usuario no puede ser desactivado.');
     }
+
+    $user->update(['active' => false]);
+    return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
+}
+
 
 public function forceDelete($id)
 {
     $user = User::findOrFail($id);
-    
+
+    if ($user->id === 1) {
+        return redirect()->route('users.index')
+            ->with('error', 'Este usuario no puede ser eliminado permanentemente.');
+    }
+
     if ($user->active) {
         return redirect()->route('users.index')->with('error', 'Solo se pueden eliminar usuarios inactivos');
     }
-    
+
     $user->delete();
     return redirect()->route('users.index')->with('success', 'Usuario eliminado permanentemente');
 }
+public function reactivate($id)
+{
+    $user = User::findOrFail($id);
+
+    if ($user->id === 1) {
+        return redirect()->route('users.index')
+            ->with('error', 'Este usuario no puede ser reactivado.');
+    }
+
+    if ($user->active) {
+        return redirect()->route('users.index')
+            ->with('error', 'El usuario ya está activo.');
+    }
+
+    $user->active = true;
+    $user->save();
+
+    return redirect()->route('users.index')->with('success', 'Usuario reactivado correctamente');
+}
+
+
 }

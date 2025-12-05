@@ -108,6 +108,7 @@
                 document.getElementById('delete-form-' + userId).submit();
             }
         });
+        
     }
 
     function reactivateUser(userId) {
@@ -143,5 +144,31 @@
             }
         });
     }
+    function confirmDelete(id) {
+    if (id === 1) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Prohibido',
+            text: 'El usuario principal Administrador no puede eliminarse.',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: '¿Seguro?',
+        text: "El usuario será desactivado.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
     </script>
 </x-app-layout>
