@@ -43,20 +43,41 @@
                                         {{ $pet->active ? 'Activo' : 'Inactivo' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('pets.edit', $pet) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                   @if($pet->active)
-                                    <button 
-                                        onclick="confirmDelete({{ $pet->id }})" 
-                                        class="text-red-600 hover:text-red-900">
-                                        Desactivar
-                                    </button>
-                                    <form id="delete-form-{{ $pet->id }}" action="{{ route('pets.destroy', $pet) }}" method="POST" class="hidden">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                    @endif
-                                </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+    <a href="{{ route('pets.edit', $pet) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+   
+    @if($pet->active)
+        <button 
+            onclick="confirmDelete({{ $pet->id }})" 
+            class="text-red-600 hover:text-red-900">
+            Desactivar
+        </button>
+        <form id="delete-form-{{ $pet->id }}" action="{{ route('pets.destroy', $pet) }}" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    @else
+        <button 
+            onclick="reactivatePet({{ $pet->id }})" 
+            class="text-green-600 hover:text-green-900 mr-3">
+            Reactivar
+        </button>
+        <form id="reactivate-form-{{ $pet->id }}" action="{{ route('pets.reactivate', $pet) }}" method="POST" class="hidden">
+            @csrf
+            @method('PATCH')
+        </form>
+        
+        <button 
+            onclick="confirmForceDeletePet({{ $pet->id }})" 
+            class="text-red-800 hover:text-red-900 font-bold">
+            Eliminar
+        </button>
+        <form id="force-delete-pet-form-{{ $pet->id }}" action="{{ route('pets.force-delete', $pet->id) }}" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endif
+</td>
                             </tr>
                             @empty
                             <tr>
@@ -72,7 +93,7 @@
             </div>
         </div>
     </div>
-    <script>
+<script>
 function confirmDelete(petId) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -86,6 +107,40 @@ function confirmDelete(petId) {
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('delete-form-' + petId).submit();
+        }
+    });
+}
+
+function reactivatePet(petId) {
+    Swal.fire({
+        title: '¿Reactivar mascota?',
+        text: "La mascota volverá a estar activa",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10B981',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, reactivar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('reactivate-form-' + petId).submit();
+        }
+    });
+}
+
+function confirmForceDeletePet(petId) {
+    Swal.fire({
+        title: '⚠️ ¿ELIMINAR PERMANENTEMENTE?',
+        html: '<p class="text-red-600 font-bold">Esta acción NO se puede deshacer.</p><p>La mascota será eliminada de la base de datos.</p>',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, eliminar permanentemente',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('force-delete-pet-form-' + petId).submit();
         }
     });
 }

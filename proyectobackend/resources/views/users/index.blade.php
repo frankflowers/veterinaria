@@ -47,18 +47,38 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+                                    
                                     @if($user->active)
-                                <button 
-                                    onclick="confirmDelete({{ $user->id }})" 
-                                    class="text-red-600 hover:text-red-900">
-                                    Desactivar
-                                </button>
-                                <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" class="hidden">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                                @endif
-                                  
+                                        <button 
+                                            onclick="confirmDelete({{ $user->id }})" 
+                                            class="text-red-600 hover:text-red-900">
+                                            Desactivar
+                                        </button>
+                                        <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @else
+                                        <button 
+                                            onclick="reactivateUser({{ $user->id }})" 
+                                            class="text-green-600 hover:text-green-900 mr-3">
+                                            Reactivar
+                                        </button>
+                                        <form id="reactivate-form-{{ $user->id }}" action="{{ route('users.reactivate', $user) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('PATCH')
+                                        </form>
+                                        
+                                        <button 
+                                            onclick="confirmForceDelete({{ $user->id }})" 
+                                            class="text-red-800 hover:text-red-900 font-bold">
+                                            Eliminar
+                                        </button>
+                                        <form id="force-delete-form-{{ $user->id }}" action="{{ route('users.force-delete', $user->id) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -71,22 +91,57 @@
             </div>
         </div>
     </div>
+
     <script>
-function confirmDelete(userId) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "El usuario será desactivado",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#EF4444',
-        cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Sí, desactivar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('delete-form-' + userId).submit();
-        }
-    });
-}
-</script>
+    function confirmDelete(userId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "El usuario será desactivado",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Sí, desactivar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + userId).submit();
+            }
+        });
+    }
+
+    function reactivateUser(userId) {
+        Swal.fire({
+            title: '¿Reactivar usuario?',
+            text: "El usuario volverá a estar activo",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#10B981',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Sí, reactivar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('reactivate-form-' + userId).submit();
+            }
+        });
+    }
+
+    function confirmForceDelete(userId) {
+        Swal.fire({
+            title: '⚠️ ¿ELIMINAR PERMANENTEMENTE?',
+            html: '<p class="text-red-600 font-bold">Esta acción NO se puede deshacer.</p><p>El usuario será eliminado de la base de datos.</p>',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#DC2626',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Sí, eliminar permanentemente',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('force-delete-form-' + userId).submit();
+            }
+        });
+    }
+    </script>
 </x-app-layout>

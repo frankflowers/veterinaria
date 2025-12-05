@@ -75,4 +75,16 @@ public function update(Request $request, User $user)
         $user->update(['active' => false]);
         return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
     }
+
+public function forceDelete($id)
+{
+    $user = User::findOrFail($id);
+    
+    if ($user->active) {
+        return redirect()->route('users.index')->with('error', 'Solo se pueden eliminar usuarios inactivos');
+    }
+    
+    $user->delete();
+    return redirect()->route('users.index')->with('success', 'Usuario eliminado permanentemente');
+}
 }

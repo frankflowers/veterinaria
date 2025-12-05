@@ -30,16 +30,16 @@ Route::middleware('auth')->group(function () {
 // Solo admin puede gestionar usuarios
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('users', UserController::class);
+    Route::patch('users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
+    Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
 });
 
 // Admin y veterinario pueden gestionar mascotas y citas
 Route::middleware(['auth', 'role:admin,veterinario'])->group(function () {
+    Route::patch('pets/{pet}/reactivate', [PetController::class, 'reactivate'])->name('pets.reactivate');
+    Route::delete('pets/{id}/force-delete', [PetController::class, 'forceDelete'])->name('pets.force-delete');
     Route::resource('pets', PetController::class);
+    
+    Route::delete('appointments/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('appointments.force-delete');
     Route::resource('appointments', AppointmentController::class);
-});
-
-// Clientes solo ven su información
-Route::middleware(['auth', 'role:cliente'])->prefix('client')->name('client.')->group(function () {
-    Route::get('/my-pets', [ClientController::class, 'myPets'])->name('my-pets');
-    Route::get('/my-appointments', [ClientController::class, 'myAppointments'])->name('my-appointments');
 });

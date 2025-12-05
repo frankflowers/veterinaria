@@ -96,4 +96,15 @@ class AppointmentController extends Controller
         $appointment->update(['status' => 'cancelada']);
         return redirect()->route('appointments.index')->with('success', 'Cita cancelada correctamente');
     }
+    public function forceDelete($id)
+{
+    $appointment = Appointment::findOrFail($id);
+    
+    if ($appointment->status == 'pendiente') {
+        return redirect()->route('appointments.index')->with('error', 'Solo se pueden eliminar citas canceladas o completadas');
+    }
+    
+    $appointment->delete();
+    return redirect()->route('appointments.index')->with('success', 'Cita eliminada permanentemente');
+}
 }

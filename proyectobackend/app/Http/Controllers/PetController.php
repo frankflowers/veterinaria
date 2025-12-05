@@ -42,7 +42,17 @@ class PetController extends Controller
     {
         return view('pets.show', compact('pet'));
     }
-
+public function forceDelete($id)
+{
+    $pet = Pet::findOrFail($id);
+    
+    if ($pet->active) {
+        return redirect()->route('pets.index')->with('error', 'Solo se pueden eliminar mascotas inactivas');
+    }
+    
+    $pet->delete();
+    return redirect()->route('pets.index')->with('success', 'Mascota eliminada permanentemente');
+}
     public function edit(Pet $pet)
     {
         $owners = User::whereHas('roles', function($q) {
@@ -52,43 +62,37 @@ class PetController extends Controller
     }
 
     public function update(Request $request, Pet $pet)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'species' => 'required|string|max:255',
-            'breed' => 'nullable|string|max:255',
-            'birth_date' => 'nullable|date',
-            'medical_history' => 'nullable|string',
-            'owner_id' => 'required|exists:users,id',
-            'active' => 'boolean'
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'species' => 'required|string|max:255',
+        'breed' => 'nullable|string|max:255',
+        'birth_date' => 'nullable|date',
+        'medical_history' => 'nullable|string',
+        'owner_id' => 'required|exists:users,id'
+    ]);
 
-        // Verificar si hay cambios
-        $hasChanges = false;
-        
-        if ($pet->name != $validated['name'] || 
-            $pet->species != $validated['species'] || 
-            $pet->breed != $validated['breed'] ||
-            $pet->birth_date != $validated['birth_date'] ||
-            $pet->medical_history != $validated['medical_history'] ||
-            $pet->owner_id != $validated['owner_id'] ||
-            $pet->active != $request->has('active')) {
-            $hasChanges = true;
-        }
+    $pet->update([
+        'name' => $validated['name'],
+        'species' => $validated['species'],
+        'breed' => $validated['breed'],
+        'birth_date' => $validated['birth_date'],
+        'medical_history' => $validated['medical_history'],
+        'owner_id' => $validated['owner_id'],
+        'active' => $request->boolean('active') // ← Cambio aquí
+    ]);
 
-        if (!$hasChanges) {
-            return redirect()->route('pets.index')->with('warning', 'No se realizaron cambios');
-        }
-
-        $validated['active'] = $request->has('active');
-        $pet->update($validated);
-
-        return redirect()->route('pets.index')->with('success', 'Mascota actualizada correctamente');
-    }
+    return redirect()->route('pets.index')->with('success', 'Mascota actualizada correctamente');
+}
 
     public function destroy(Pet $pet)
     {
         $pet->update(['active' => false]);
         return redirect()->route('pets.index')->with('success', 'Mascota desactivada correctamente');
     }
+    public function reactivate(Pet $pet)
+{
+    $pet->update(['active' => true]);
+    return redirect()->route('pets.index')->with('success', 'Mascota reactivada correctamente');
+}
 }

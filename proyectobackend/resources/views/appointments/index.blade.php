@@ -62,20 +62,31 @@
                                         {{ ucfirst($appointment->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('appointments.edit', $appointment) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                  @if($appointment->status == 'pendiente')
-                                    <button 
-                                        onclick="confirmCancel({{ $appointment->id }})" 
-                                        class="text-red-600 hover:text-red-900">
-                                        Cancelar
-                                    </button>
-                                    <form id="cancel-form-{{ $appointment->id }}" action="{{ route('appointments.destroy', $appointment) }}" method="POST" class="hidden">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                    @endif
-                                </td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+    <a href="{{ route('appointments.edit', $appointment) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+    
+    @if($appointment->status == 'pendiente')
+        <button 
+            onclick="confirmCancel({{ $appointment->id }})" 
+            class="text-red-600 hover:text-red-900">
+            Cancelar
+        </button>
+        <form id="cancel-form-{{ $appointment->id }}" action="{{ route('appointments.destroy', $appointment) }}" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    @elseif($appointment->status == 'cancelada' || $appointment->status == 'completada')
+        <button 
+            onclick="confirmForceDeleteAppointment({{ $appointment->id }})" 
+            class="text-red-800 hover:text-red-900 font-bold">
+            Eliminar
+        </button>
+        <form id="force-delete-appointment-form-{{ $appointment->id }}" action="{{ route('appointments.force-delete', $appointment->id) }}" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endif
+</td>
                             </tr>
                             @empty
                             <tr>
@@ -105,6 +116,23 @@ function confirmCancel(appointmentId) {
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('cancel-form-' + appointmentId).submit();
+        }
+    });
+}
+
+function confirmForceDeleteAppointment(appointmentId) {
+    Swal.fire({
+        title: '⚠️ ¿ELIMINAR PERMANENTEMENTE?',
+        html: '<p class="text-red-600 font-bold">Esta acción NO se puede deshacer.</p><p>La cita será eliminada de la base de datos.</p>',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, eliminar permanentemente',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('force-delete-appointment-form-' + appointmentId).submit();
         }
     });
 }
